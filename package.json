@@ -24,6 +24,10 @@
     "release": "n8n-node release",
     "prepublishOnly": "n8n-node prerelease"
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "files": [
     "dist"
   ],
