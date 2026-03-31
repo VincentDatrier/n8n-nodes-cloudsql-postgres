@@ -6,7 +6,7 @@ import * as database from './database/Database.resource';
 export const versionDescription: INodeTypeDescription = {
 	displayName: 'Cloud SQL (Postgres)',
 	name: 'cloudSqlPostgres',
-	icon: 'file:postgres.svg',
+	icon: 'file:cloudsql.svg',
 	group: ['input'],
 	version: [2, 3, 4, 5, 6, 7, 8],
 	subtitle: '={{ $parameter["operation"] }}',

@@ -8,7 +8,7 @@ export class CloudSqlPostgres extends VersionedNodeType {
 		const baseDescription: INodeTypeBaseDescription = {
 			displayName: 'Cloud SQL (Postgres)',
 			name: 'cloudSqlPostgres',
-			icon: 'file:postgres.svg',
+			icon: 'file:cloudsql.svg',
 			group: ['input'],
 			defaultVersion: 8,
 			description: 'Get, add and update data in a Cloud SQL Postgres instance',

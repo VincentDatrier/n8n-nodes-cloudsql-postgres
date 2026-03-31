@@ -3,7 +3,7 @@ import type { ICredentialType, INodeProperties } from 'n8n-workflow';
 export class CloudSqlPostgres implements ICredentialType {
 	name = 'cloudSqlPostgres';
 	displayName = 'Cloud SQL (Postgres)';
-	icon = 'file:postgres.svg' as const;
+	icon = 'file:cloudsql.svg' as const;
 	testedBy = 'cloudSqlPostgresConnectionTest';
 	documentationUrl = 'https://github.com/GoogleCloudPlatform/cloud-sql-nodejs-connector#usage';
 

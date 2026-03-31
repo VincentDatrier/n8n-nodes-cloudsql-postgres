@@ -21,7 +21,7 @@ export class CloudSqlPostgresTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Cloud SQL (Postgres) Trigger',
 		name: 'cloudSqlPostgresTrigger',
-		icon: 'file:postgres.svg',
+		icon: 'file:cloudsql.svg',
 		group: ['trigger'],
 		version: 1,
 		description: 'Listens to Cloud SQL Postgres messages',
