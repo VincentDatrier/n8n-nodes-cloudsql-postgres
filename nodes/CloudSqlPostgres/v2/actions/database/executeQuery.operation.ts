@@ -82,7 +82,7 @@ export async function execute(
 			if (rawReplacements) {
 				const nodeVersion = nodeOptions.nodeVersion as number;
 
-				if (nodeVersion >= 2.5) {
+				if (nodeVersion >= 7) {
 					const rawValues = rawReplacements.replace(/^=+/, '');
 					const resolvables = getResolvables(rawValues);
 					if (resolvables.length) {

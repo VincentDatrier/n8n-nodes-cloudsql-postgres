@@ -10,19 +10,19 @@ export class CloudSqlPostgres extends VersionedNodeType {
 			name: 'cloudSqlPostgres',
 			icon: 'file:postgres.svg',
 			group: ['input'],
-			defaultVersion: 2.6,
+			defaultVersion: 8,
 			description: 'Get, add and update data in a Cloud SQL Postgres instance',
 			parameterPane: 'wide',
 		};
 
 		const nodeVersions: IVersionedNodeType['nodeVersions'] = {
 			2: new PostgresV2(baseDescription),
-			2.1: new PostgresV2(baseDescription),
-			2.2: new PostgresV2(baseDescription),
-			2.3: new PostgresV2(baseDescription),
-			2.4: new PostgresV2(baseDescription),
-			2.5: new PostgresV2(baseDescription),
-			2.6: new PostgresV2(baseDescription),
+			3: new PostgresV2(baseDescription),
+			4: new PostgresV2(baseDescription),
+			5: new PostgresV2(baseDescription),
+			6: new PostgresV2(baseDescription),
+			7: new PostgresV2(baseDescription),
+			8: new PostgresV2(baseDescription),
 		};
 
 		super(nodeVersions, baseDescription);

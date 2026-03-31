@@ -80,7 +80,7 @@ Authentication behavior:
 ## Compatibility
 
 - Uses `n8nNodesApiVersion: 1`
-- Database node versions available: `2` through `2.6` (default: `2.6`)
+- Database node versions available: `2` through `8` (default: `8`)
 - Trigger node version: `1`
 
 This package uses external dependencies (`@google-cloud/cloud-sql-connector`, `google-auth-library`, `pg-promise`) and has `n8n.strict = false`.

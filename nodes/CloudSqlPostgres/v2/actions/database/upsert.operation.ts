@@ -49,7 +49,7 @@ const properties: INodeProperties[] = [
 			'Whether to map node input properties and the table data automatically or manually',
 		displayOptions: {
 			show: {
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -63,7 +63,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['autoMapInputData'],
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -84,7 +84,7 @@ const properties: INodeProperties[] = [
 		hint: "Used to find the correct row(s) to update. Doesn't get changed. Has to be unique.",
 		displayOptions: {
 			show: {
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -98,7 +98,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['defineBelow'],
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -114,7 +114,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['defineBelow'],
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 		default: {},
@@ -172,7 +172,7 @@ const properties: INodeProperties[] = [
 		},
 		displayOptions: {
 			show: {
-				'@version': [{ _cnd: { gte: 2.2 } }],
+				'@version': [{ _cnd: { gte: 4 } }],
 			},
 		},
 	},
@@ -226,12 +226,12 @@ export async function execute(
 			}) as string;
 
 			const columnsToMatchOn: string[] =
-				nodeVersion < 2.2
+				nodeVersion < 4
 					? [this.getNodeParameter('columnToMatchOn', i) as string]
 					: (this.getNodeParameter('columns.matchingColumns', i) as string[]);
 
 			const dataMode =
-				nodeVersion < 2.2
+				nodeVersion < 4
 					? (this.getNodeParameter('dataMode', i) as string)
 					: (this.getNodeParameter('columns.mappingMode', i) as string);
 
@@ -243,13 +243,13 @@ export async function execute(
 
 			if (dataMode === 'defineBelow') {
 				const valuesToSend =
-					nodeVersion < 2.2
+					nodeVersion < 4
 						? ((this.getNodeParameter('valuesToSend', i, []) as IDataObject)
 								.values as IDataObject[])
 						: ((this.getNodeParameter('columns.values', i, []) as IDataObject)
 								.values as IDataObject[]);
 
-				if (nodeVersion < 2.2) {
+				if (nodeVersion < 4) {
 					item = prepareItem(valuesToSend);
 					item[columnsToMatchOn[0]] = this.getNodeParameter('valueToMatchOn', i) as string;
 				} else {
@@ -273,7 +273,7 @@ export async function execute(
 
 			tableSchema = await updateTableSchema(db, tableSchema, schema, table);
 
-			if (nodeVersion >= 2.4) {
+			if (nodeVersion >= 6) {
 				item = convertArraysToPostgresFormat(item, tableSchema, this.getNode(), i);
 			}
 

@@ -266,7 +266,7 @@ export function configureQueryRunner(
 				if (!returnData.length) {
 					const pairedItem = generatePairedItemData(queries.length);
 
-					if ((options?.nodeVersion as number) < 2.3) {
+					if ((options?.nodeVersion as number) < 5) {
 						if (emptyReturnData.length) {
 							emptyReturnData[0].pairedItem = pairedItem;
 						}
@@ -301,14 +301,14 @@ export function configureQueryRunner(
 						const values = queries[i].values;
 
 						let transactionResults;
-						if ((options?.nodeVersion as number) < 2.3) {
+						if ((options?.nodeVersion as number) < 5) {
 							transactionResults = await transaction.any(query, values);
 						} else {
 							transactionResults = (await transaction.multi(query, values)).flat();
 						}
 
 						if (!transactionResults.length) {
-							if ((options?.nodeVersion as number) < 2.3) {
+							if ((options?.nodeVersion as number) < 5) {
 								transactionResults = emptyReturnData;
 							} else {
 								transactionResults = isSelectQuery(query) ? [] : [{ success: true }];
@@ -341,14 +341,14 @@ export function configureQueryRunner(
 						const values = queries[i].values;
 
 						let transactionResults;
-						if ((options?.nodeVersion as number) < 2.3) {
+						if ((options?.nodeVersion as number) < 5) {
 							transactionResults = await task.any(query, values);
 						} else {
 							transactionResults = (await task.multi(query, values)).flat();
 						}
 
 						if (!transactionResults.length) {
-							if ((options?.nodeVersion as number) < 2.3) {
+							if ((options?.nodeVersion as number) < 5) {
 								transactionResults = emptyReturnData;
 							} else {
 								transactionResults = isSelectQuery(query) ? [] : [{ success: true }];

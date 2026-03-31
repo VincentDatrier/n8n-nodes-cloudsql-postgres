@@ -50,7 +50,7 @@ const properties: INodeProperties[] = [
 			'Whether to map node input properties and the table data automatically or manually',
 		displayOptions: {
 			show: {
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -64,7 +64,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['autoMapInputData'],
-				'@version': [2],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -85,7 +85,7 @@ const properties: INodeProperties[] = [
 		hint: 'The column to use when matching rows in Postgres to the input items of this node. Usually an ID.',
 		displayOptions: {
 			show: {
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -99,7 +99,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['defineBelow'],
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -115,7 +115,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['defineBelow'],
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 		default: {},
@@ -173,7 +173,7 @@ const properties: INodeProperties[] = [
 		},
 		displayOptions: {
 			show: {
-				'@version': [{ _cnd: { gte: 2.2 } }],
+				'@version': [{ _cnd: { gte: 4 } }],
 			},
 		},
 	},
@@ -227,37 +227,37 @@ export async function execute(
 			}) as string;
 
 			const columnsToMatchOn: string[] =
-				nodeVersion < 2.2
+				nodeVersion < 4
 					? [this.getNodeParameter('columnToMatchOn', i) as string]
 					: (this.getNodeParameter('columns.matchingColumns', i) as string[]);
 
 			const dataMode =
-				nodeVersion < 2.2
+				nodeVersion < 4
 					? (this.getNodeParameter('dataMode', i) as string)
 					: (this.getNodeParameter('columns.mappingMode', i) as string);
 
 			let item: IDataObject = {};
 			let valueToMatchOn: string | IDataObject = '';
-			if (nodeVersion < 2.2) {
+			if (nodeVersion < 4) {
 				valueToMatchOn = this.getNodeParameter('valueToMatchOn', i) as string;
 			}
 
 			if (dataMode === 'autoMapInputData') {
 				item = items[i].json;
-				if (nodeVersion < 2.2) {
+				if (nodeVersion < 4) {
 					valueToMatchOn = item[columnsToMatchOn[0]] as string;
 				}
 			}
 
 			if (dataMode === 'defineBelow') {
 				const valuesToSend =
-					nodeVersion < 2.2
+					nodeVersion < 4
 						? ((this.getNodeParameter('valuesToSend', i, []) as IDataObject)
 								.values as IDataObject[])
 						: ((this.getNodeParameter('columns.values', i, []) as IDataObject)
 								.values as IDataObject[]);
 
-				if (nodeVersion < 2.2) {
+				if (nodeVersion < 4) {
 					item = prepareItem(valuesToSend);
 					item[columnsToMatchOn[0]] = this.getNodeParameter('valueToMatchOn', i) as string;
 				} else {
@@ -266,7 +266,7 @@ export async function execute(
 			}
 
 			const matchValues: string[] = [];
-			if (nodeVersion < 2.2) {
+			if (nodeVersion < 4) {
 				if (!item[columnsToMatchOn[0]] && dataMode === 'autoMapInputData') {
 					throw new NodeOperationError(
 						this.getNode(),
@@ -304,7 +304,7 @@ export async function execute(
 
 			tableSchema = await updateTableSchema(db, tableSchema, schema, table);
 
-			if (nodeVersion >= 2.4) {
+			if (nodeVersion >= 6) {
 				item = convertArraysToPostgresFormat(item, tableSchema, this.getNode(), i);
 			}
 
@@ -315,7 +315,7 @@ export async function execute(
 			let valuesLength = values.length + 1;
 
 			let condition = '';
-			if (nodeVersion < 2.2) {
+			if (nodeVersion < 4) {
 				condition = `$${valuesLength}:name = $${valuesLength + 1}`;
 				valuesLength = valuesLength + 2;
 				values.push(columnsToMatchOn[0], valueToMatchOn);

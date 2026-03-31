@@ -94,7 +94,7 @@ export async function configurePostgres(
 			noWarnings: true,
 		});
 
-		if (typeof options.nodeVersion === 'number' && options.nodeVersion >= 2.1) {
+		if (typeof options.nodeVersion === 'number' && options.nodeVersion >= 3) {
 			// Always return dates as ISO strings
 			[pgp.pg.types.builtins.TIMESTAMP, pgp.pg.types.builtins.TIMESTAMPTZ].forEach((type) => {
 				pgp.pg.types.setTypeParser(type, (value: string) => {
@@ -210,7 +210,7 @@ export async function configureCloudSqlPostgres(
 			noWarnings: true,
 		});
 
-		if (typeof options.nodeVersion === 'number' && options.nodeVersion >= 2.1) {
+		if (typeof options.nodeVersion === 'number' && options.nodeVersion >= 3) {
 			[pgp.pg.types.builtins.TIMESTAMP, pgp.pg.types.builtins.TIMESTAMPTZ].forEach((type) => {
 				pgp.pg.types.setTypeParser(type, (value: string) => {
 					const parsedDate = new Date(value);

@@ -51,7 +51,7 @@ const properties: INodeProperties[] = [
 			'Whether to map node input properties and the table data automatically or manually',
 		displayOptions: {
 			show: {
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -65,7 +65,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['autoMapInputData'],
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 	},
@@ -81,7 +81,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['defineBelow'],
-				'@version': [2, 2.1],
+				'@version': [2, 3],
 			},
 		},
 		default: {},
@@ -139,7 +139,7 @@ const properties: INodeProperties[] = [
 		},
 		displayOptions: {
 			show: {
-				'@version': [{ _cnd: { gte: 2.2 } }],
+				'@version': [{ _cnd: { gte: 4 } }],
 			},
 		},
 	},
@@ -204,7 +204,7 @@ export async function execute(
 			let values: QueryValues = [schema, table];
 
 			const dataMode =
-				nodeVersion < 2.2
+				nodeVersion < 4
 					? (this.getNodeParameter('dataMode', i) as string)
 					: (this.getNodeParameter('columns.mappingMode', i) as string);
 
@@ -216,14 +216,14 @@ export async function execute(
 
 			if (dataMode === 'defineBelow') {
 				const valuesToSend =
-					nodeVersion < 2.2
+					nodeVersion < 4
 						? ((this.getNodeParameter('valuesToSend', i, []) as IDataObject)
 								.values as IDataObject[])
 						: ((this.getNodeParameter('columns.values', i, []) as IDataObject)
 								.values as IDataObject[]);
 
 				item =
-					nodeVersion < 2.2
+					nodeVersion < 4
 						? prepareItem(valuesToSend)
 						: hasJsonDataTypeInSchema(tableSchema)
 							? convertValuesToJsonWithPgp(
@@ -236,7 +236,7 @@ export async function execute(
 
 			tableSchema = await updateTableSchema(db, tableSchema, schema, table);
 
-			if (nodeVersion >= 2.4) {
+			if (nodeVersion >= 6) {
 				item = convertArraysToPostgresFormat(item, tableSchema, this.getNode(), i);
 			}
 
@@ -244,7 +244,7 @@ export async function execute(
 
 			const outputColumns = this.getNodeParameter('options.outputColumns', i, ['*']) as string[];
 
-			if (nodeVersion >= 2.6 && Object.keys(item).length === 0) {
+			if (nodeVersion >= 8 && Object.keys(item).length === 0) {
 				query = 'INSERT INTO $1:name.$2:name DEFAULT VALUES';
 			}
 
