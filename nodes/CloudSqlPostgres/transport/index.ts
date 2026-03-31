@@ -50,7 +50,7 @@ const getPostgresConfig = (
 		};
 	} else {
 		dbConfig.ssl = !['disable', undefined].includes(credentials.ssl as string | undefined);
-		// @ts-ignore these typings need to be updated
+		// @ts-expect-error these typings need to be updated
 		dbConfig.sslmode = credentials.ssl || 'disable';
 	}
 

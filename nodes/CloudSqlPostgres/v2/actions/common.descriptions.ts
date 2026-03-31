@@ -80,6 +80,42 @@ export const optionsCollection: INodeProperties = {
 			},
 		},
 		{
+			// eslint-disable-next-line n8n-nodes-base/node-param-display-name-wrong-for-dynamic-multi-options
+			displayName: 'Output Columns',
+			name: 'outputColumns',
+			type: 'multiOptions',
+			// eslint-disable-next-line n8n-nodes-base/node-param-description-wrong-for-dynamic-multi-options
+			description:
+				'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/" target="_blank">expression</a>',
+			typeOptions: {
+				loadOptionsMethod: 'getColumnsMultiOptions',
+				loadOptionsDependsOn: ['table.value'],
+			},
+			default: [],
+			displayOptions: {
+				show: { '/operation': ['select', 'insert', 'update', 'upsert'] },
+			},
+		},
+		{
+			displayName: 'Output Large-Format Numbers As',
+			name: 'largeNumbersOutput',
+			type: 'options',
+			options: [
+				{
+					name: 'Numbers',
+					value: 'numbers',
+				},
+				{
+					name: 'Text',
+					value: 'text',
+					description:
+						'Use this if you expect numbers longer than 16 digits (otherwise numbers may be incorrect)',
+				},
+			],
+			hint: 'Applies to NUMERIC and BIGINT columns only',
+			default: 'text',
+		},
+		{
 			displayName: 'Query Batching',
 			name: 'queryBatching',
 			type: 'options',
@@ -119,51 +155,17 @@ export const optionsCollection: INodeProperties = {
 			},
 		},
 		{
-			// eslint-disable-next-line n8n-nodes-base/node-param-display-name-miscased
-			displayName: 'Treat query parameters in single quotes as text',
-			name: 'treatQueryParametersInSingleQuotesAsText',
+			displayName: 'Replace Empty Strings with NULL',
+			name: 'replaceEmptyStrings',
 			type: 'boolean',
 			default: false,
-			description: "Whether to treat query parameters enclosed in single quotes as text e.g. '$1'",
-			displayOptions: {
-				show: { queryReplacement: [{ _cnd: { exists: true } }] },
-			},
-		},
-		{
-			// eslint-disable-next-line n8n-nodes-base/node-param-display-name-wrong-for-dynamic-multi-options
-			displayName: 'Output Columns',
-			name: 'outputColumns',
-			type: 'multiOptions',
-			// eslint-disable-next-line n8n-nodes-base/node-param-description-wrong-for-dynamic-multi-options
 			description:
-				'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/" target="_blank">expression</a>',
-			typeOptions: {
-				loadOptionsMethod: 'getColumnsMultiOptions',
-				loadOptionsDependsOn: ['table.value'],
-			},
-			default: [],
+				'Whether to replace empty strings with NULL in input, could be useful when data come from spreadsheet',
 			displayOptions: {
-				show: { '/operation': ['select', 'insert', 'update', 'upsert'] },
+				show: {
+					'/operation': ['insert', 'update', 'upsert', 'executeQuery'],
+				},
 			},
-		},
-		{
-			displayName: 'Output Large-Format Numbers As',
-			name: 'largeNumbersOutput',
-			type: 'options',
-			options: [
-				{
-					name: 'Numbers',
-					value: 'numbers',
-				},
-				{
-					name: 'Text',
-					value: 'text',
-					description:
-						'Use this if you expect numbers longer than 16 digits (otherwise numbers may be incorrect)',
-				},
-			],
-			hint: 'Applies to NUMERIC and BIGINT columns only',
-			default: 'text',
 		},
 		{
 			displayName: 'Skip on Conflict',
@@ -179,16 +181,14 @@ export const optionsCollection: INodeProperties = {
 			},
 		},
 		{
-			displayName: 'Replace Empty Strings with NULL',
-			name: 'replaceEmptyStrings',
+			// eslint-disable-next-line n8n-nodes-base/node-param-display-name-miscased
+			displayName: 'Treat query parameters in single quotes as text',
+			name: 'treatQueryParametersInSingleQuotesAsText',
 			type: 'boolean',
 			default: false,
-			description:
-				'Whether to replace empty strings with NULL in input, could be useful when data come from spreadsheet',
+			description: "Whether to treat query parameters enclosed in single quotes as text e.g. '$1'",
 			displayOptions: {
-				show: {
-					'/operation': ['insert', 'update', 'upsert', 'executeQuery'],
-				},
+				show: { queryReplacement: [{ _cnd: { exists: true } }] },
 			},
 		},
 	],
@@ -279,7 +279,6 @@ export const whereFixedCollection: INodeProperties = {
 					type: 'options',
 					description:
 						"The operator to check the column against. When using 'LIKE' operator percent sign ( %) matches zero or more characters, underscore ( _ ) matches any single character.",
-					// eslint-disable-next-line n8n-nodes-base/node-param-options-type-unsorted-items
 					options: operatorOptions,
 					default: 'equal',
 				},

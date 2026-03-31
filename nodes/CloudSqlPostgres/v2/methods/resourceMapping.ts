@@ -21,7 +21,6 @@ const postgresTypeToFieldType = new Map(
 		smallserial: 'number',
 		serial: 'number',
 		bigserial: 'number',
-		// eslint-disable-next-line id-denylist
 		boolean: 'boolean',
 		timestamp: 'dateTime',
 		date: 'dateTime',

@@ -9,7 +9,6 @@ import { NodeOperationError } from 'n8n-workflow';
 import { getResolvables, updateDisplayOptions } from '../../../shared/utilities';
 
 import type {
-	PgpDatabase,
 	PostgresNodeOptions,
 	QueriesRunner,
 	QueryWithValues,
@@ -56,7 +55,6 @@ export async function execute(
 	runQueries: QueriesRunner,
 	items: INodeExecutionData[],
 	nodeOptions: PostgresNodeOptions,
-	_db?: PgpDatabase,
 ): Promise<INodeExecutionData[]> {
 	const queries: QueryWithValues[] = replaceEmptyStringsByNulls(
 		items,

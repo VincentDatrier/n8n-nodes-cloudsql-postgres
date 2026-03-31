@@ -25,10 +25,10 @@ export type EnumInfo = {
 	enumlabel: string;
 };
 
-export type PgpClient = pgPromise.IMain<{}, pg.IClient>;
-export type PgpDatabase = pgPromise.IDatabase<{}, pg.IClient>;
+export type PgpClient = pgPromise.IMain<object, pg.IClient>;
+export type PgpDatabase = pgPromise.IDatabase<object, pg.IClient>;
 export type PgpConnectionParameters = pg.IConnectionParameters<pg.IClient>;
-export type PgpConnection = pgPromise.IConnected<{}, pg.IClient>;
+export type PgpConnection = pgPromise.IConnected<object, pg.IClient>;
 export type ConnectionsData = { db: PgpDatabase; pgp: PgpClient };
 
 export type QueriesRunner = (
@@ -63,8 +63,8 @@ export type PostgresNodeCredentials = {
 } & (
 	| { sshTunnel: false }
 	| ({
-			sshTunnel: true;
-	  } & SSHCredentials)
+		sshTunnel: true;
+	} & SSHCredentials)
 );
 
 export type CloudSqlNodeCredentials = {

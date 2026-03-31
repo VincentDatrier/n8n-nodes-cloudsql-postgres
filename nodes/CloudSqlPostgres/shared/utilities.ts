@@ -54,19 +54,19 @@ export const flattenKeys = (obj: IDataObject, prefix: string[] = []): IDataObjec
 };
 
 export function flatten<T>(nestedArray: T[][]) {
-	const result = [];
+	const result: T[] = [];
 
 	(function loop(array: T[] | T[][]) {
 		for (let i = 0; i < array.length; i++) {
-			if (Array.isArray(array[i])) {
-				loop(array[i] as T[]);
-			} else {
-				result.push(array[i]);
+				if (Array.isArray(array[i])) {
+					loop(array[i] as T[]);
+				} else {
+					result.push(array[i] as T);
+				}
 			}
-		}
-	})(nestedArray);
+		})(nestedArray);
 
-	return result as any;
+	return result;
 }
 
 export const compareItems = <T extends { json: Record<string, unknown> }>(
@@ -111,7 +111,7 @@ export function processJsonInput<T>(jsonData: T, inputName?: string) {
 	if (typeof jsonData === 'string') {
 		try {
 			values = jsonParse(jsonData);
-		} catch (error) {
+		} catch {
 			throw new ApplicationError(`Input ${input} must contain a valid JSON`, { level: 'warning' });
 		}
 	} else if (typeof jsonData === 'object') {
@@ -134,7 +134,7 @@ const parseStringAndCompareToObject = (str: string, arr: IDataObject) => {
 	try {
 		const parsedArray = jsonParse(str);
 		return isEqual(parsedArray, arr);
-	} catch (error) {
+	} catch {
 		return false;
 	}
 };

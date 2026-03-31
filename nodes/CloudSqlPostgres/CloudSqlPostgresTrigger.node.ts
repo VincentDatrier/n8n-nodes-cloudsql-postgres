@@ -15,6 +15,7 @@ import {
 	searchTables,
 	prepareNames,
 } from './PostgresTrigger.functions';
+import { cloudSqlPostgresConnectionTest } from './v2/methods/credentialTest';
 
 export class CloudSqlPostgresTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -39,14 +40,16 @@ export class CloudSqlPostgresTrigger implements INodeType {
 			activationHint:
 				"Once you've finished building your workflow, publish it to have it also listen continuously (you just won't see those executions here).",
 		},
-		inputs: [],
-		outputs: [NodeConnectionTypes.Main],
-		credentials: [
-			{
-				name: 'cloudSqlPostgres',
-				required: true,
-			},
-		],
+			inputs: [],
+			outputs: [NodeConnectionTypes.Main],
+			usableAsTool: true,
+			credentials: [
+				{
+					name: 'cloudSqlPostgres',
+					required: true,
+					testedBy: 'cloudSqlPostgresConnectionTest',
+				},
+			],
 		properties: [
 			{
 				displayName: 'Listen For',
@@ -246,6 +249,9 @@ export class CloudSqlPostgresTrigger implements INodeType {
 			searchSchema,
 			searchTables,
 		},
+		credentialTest: {
+			cloudSqlPostgresConnectionTest,
+		},
 	};
 
 	async trigger(this: ITriggerFunctions): Promise<ITriggerResponse> {
@@ -261,7 +267,7 @@ export class CloudSqlPostgresTrigger implements INodeType {
 			if (data.payload) {
 				try {
 					data.payload = JSON.parse(data.payload as string) as IDataObject;
-				} catch (error) {}
+				} catch { /* intentionally empty */ }
 			}
 			this.emit([this.helpers.returnJsonArray([data])]);
 		};
@@ -332,31 +338,47 @@ export class CloudSqlPostgresTrigger implements INodeType {
 			await cleanUpDb();
 		};
 
-		const manualTriggerFunction = async () => {
-			await new Promise(async (resolve, reject) => {
-				const timeoutHandler = setTimeout(async () => {
-					reject(
-						new Error(
-							await (async () => {
-								await cleanUpDb();
-								return 'Aborted, no data received within 30secs. This 30sec timeout is only set for "manually triggered execution". Active Workflows will listen indefinitely.';
-							})(),
-						),
-					);
-				}, 60000);
-				connection.client.on('notification', async (data: IDataObject) => {
-					if (data.payload) {
-						try {
-							data.payload = JSON.parse(data.payload as string) as IDataObject;
-						} catch (error) {}
-					}
+			const manualTriggerFunction = async () => {
+				await new Promise<void>((resolve, reject) => {
+					let settled = false;
+					const timeoutSignal = AbortSignal.timeout(60000);
 
-					this.emit([this.helpers.returnJsonArray([data])]);
-					clearTimeout(timeoutHandler);
-					resolve(true);
+					timeoutSignal.addEventListener(
+						'abort',
+						() => {
+							if (settled) {
+								return;
+							}
+							settled = true;
+							cleanUpDb()
+								.then(() => {
+									reject(
+										new Error(
+											'Aborted, no data received within 30secs. This 30sec timeout is only set for "manually triggered execution". Active Workflows will listen indefinitely.',
+										),
+									);
+								})
+								.catch(reject);
+						},
+						{ once: true },
+					);
+
+					connection.client.once('notification', (data: IDataObject) => {
+						if (settled) {
+							return;
+						}
+						settled = true;
+						if (data.payload) {
+							try {
+								data.payload = JSON.parse(data.payload as string) as IDataObject;
+							} catch { /* intentionally empty */ }
+						}
+
+						this.emit([this.helpers.returnJsonArray([data])]);
+						resolve();
+					});
 				});
-			});
-		};
+			};
 
 		return {
 			closeFunction,

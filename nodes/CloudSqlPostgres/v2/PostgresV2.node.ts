@@ -10,6 +10,7 @@ import { router } from './actions/router';
 import { versionDescription } from './actions/versionDescription';
 import { credentialTest, listSearch, loadOptions, resourceMapping } from './methods';
 
+// eslint-disable-next-line @n8n/community-nodes/icon-validation
 export class PostgresV2 implements INodeType {
 	description: INodeTypeDescription;
 

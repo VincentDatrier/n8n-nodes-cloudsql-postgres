@@ -1,4 +1,3 @@
-import { ApplicationError } from '@n8n/errors';
 import type {
 	ITriggerFunctions,
 	IDataObject,
@@ -6,6 +5,7 @@ import type {
 	INodeListSearchResult,
 	INodeListSearchItems,
 } from 'n8n-workflow';
+import { ApplicationError } from 'n8n-workflow';
 
 import { configureCloudSqlPostgres } from './transport';
 import type { CloudSqlNodeCredentials, PgpDatabase } from './v2/helpers/interfaces';

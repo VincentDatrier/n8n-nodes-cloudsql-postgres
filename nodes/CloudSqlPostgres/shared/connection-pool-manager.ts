@@ -6,9 +6,6 @@ let instance: ConnectionPoolManager;
 // 5 minutes
 const ttl = 5 * 60 * 1000;
 
-// 1 minute
-const cleanUpInterval = 60 * 1000;
-
 type RegistrationOptions = {
 	credentials: unknown;
 	nodeType: string;
@@ -37,14 +34,7 @@ export class ConnectionPoolManager {
 
 	private map = new Map<string, Registration<unknown>>();
 
-	private constructor(private readonly logger: Logger) {
-		process.on('exit', () => {
-			this.logger.debug('ConnectionPoolManager: Shutting down. Cleaning up all pools');
-			this.purgeConnections();
-		});
-
-		setInterval(() => this.cleanupStaleConnections(), cleanUpInterval);
-	}
+	private constructor(private readonly logger: Logger) {}
 
 	private makeKey({ credentials, nodeType, nodeVersion }: RegistrationOptions): string {
 		return createHash('sha1')
@@ -59,6 +49,8 @@ export class ConnectionPoolManager {
 	}
 
 	async getConnection<T>(options: GetConnectionOption<T>): Promise<T> {
+		this.cleanupStaleConnections();
+
 		const key = this.makeKey(options);
 
 		let value = this.map.get(key);

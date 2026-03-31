@@ -69,13 +69,22 @@ export function prepareErrorItem(error: IDataObject | NodeOperationError | Error
 
 export function parsePostgresError(
 	node: INode,
-	error: any,
+	error: unknown,
 	queries: QueryWithValues[],
 	itemIndex?: number,
 ) {
-	if (error.message.includes('syntax error at or near') && queries.length) {
-		try {
-			const snippet = error.message.match(/syntax error at or near "(.*)"/)[1] as string;
+	type PostgresErrorLike = Error &
+		Partial<{
+			description: string;
+			detail: string;
+			hint: string;
+		}>;
+	const parsedError = (error instanceof Error ? error : new Error(String(error))) as PostgresErrorLike;
+
+	if (parsedError.message.includes('syntax error at or near') && queries.length) {
+		const snippetMatch = parsedError.message.match(/syntax error at or near "(.*)"/);
+		const snippet = snippetMatch?.[1];
+		if (snippet) {
 			const failedQureryIndex = queries.findIndex((query) => query.query.includes(snippet));
 
 			if (failedQureryIndex !== -1) {
@@ -86,41 +95,46 @@ export function parsePostgresError(
 				const lines = failedQuery.split('\n');
 				const lineIndex = lines.findIndex((line) => line.includes(snippet));
 				const errorMessage = `Syntax error at line ${lineIndex + 1} near "${snippet}"`;
-				error.message = errorMessage;
+				parsedError.message = errorMessage;
 			}
-		} catch {}
+		}
 	}
 
-	let message = error.message;
-	const errorDescription = error.description ? error.description : error.detail || error.hint;
+	let message = parsedError.message;
+	const errorDescription = parsedError.description
+		? parsedError.description
+		: parsedError.detail || parsedError.hint;
 	let description = errorDescription;
 
 	if (!description && queries[itemIndex || 0]?.query) {
 		description = `Failed query: ${queries[itemIndex || 0].query}`;
 	}
 
-	if (error.message.includes('ECONNREFUSED')) {
+	if (parsedError.message.includes('ECONNREFUSED')) {
 		message = 'Connection refused';
-		try {
-			description = error.message.split('ECONNREFUSED ')[1].trim();
-		} catch (e) {}
+		const refusedDescription = parsedError.message.split('ECONNREFUSED ')[1];
+		if (refusedDescription) {
+			description = refusedDescription.trim();
+		}
 	}
 
-	if (error.message.includes('ENOTFOUND')) {
+	if (parsedError.message.includes('ENOTFOUND')) {
 		message = 'Host not found';
-		try {
-			description = error.message.split('ENOTFOUND ')[1].trim();
-		} catch (e) {}
+		const hostDescription = parsedError.message.split('ENOTFOUND ')[1];
+		if (hostDescription) {
+			description = hostDescription.trim();
+		}
 	}
 
-	if (error.message.includes('ETIMEDOUT')) {
+	if (parsedError.message.includes('ETIMEDOUT')) {
 		message = 'Connection timed out';
-		try {
-			description = error.message.split('ETIMEDOUT ')[1].trim();
-		} catch (e) {}
+		const timeoutDescription = parsedError.message.split('ETIMEDOUT ')[1];
+		if (timeoutDescription) {
+			description = timeoutDescription.trim();
+		}
 	}
 
-	return new NodeOperationError(node, error as Error, {
+	return new NodeOperationError(node, parsedError, {
 		message,
 		description,
 		itemIndex,
